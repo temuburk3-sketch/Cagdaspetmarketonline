@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Çağdaş Online Satış & Pazaryeri Muhasebe Merkezi</title>
+    <meta name="description" content="Çağdaş Pet Market - Bağımsız Online Satış, Pazaryeri API ve Komisyon Kâr/Zarar Muhasebe Uygulaması">
+    <meta property="og:title" content="Çağdaş Online Satış & Pazaryeri Muhasebe Merkezi">
+    <meta property="og:description" content="Çağdaş Pet Market - Bağımsız Online Satış, Pazaryeri API ve Komisyon Kâr/Zarar Muhasebe Uygulaması">
+    <!-- Supabase Client & JSZip for GitHub Repo Export -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css?v=4.5.0">
+    <style>
+        :root {
+            --online-bg: #f8fafc;
+            --online-card: #ffffff;
+            --online-border: #e2e8f0;
+            --online-text: #0f172a;
+            --online-muted: #64748b;
+            --online-primary: #4f46e5;
+            --online-success: #16a34a;
+            --online-danger: #dc2626;
+            --online-warning: #d97706;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--online-bg);
+            color: var(--online-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+            font-variant-numeric: tabular-nums;
+        }
+        .online-topbar {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 3px solid #4f46e5;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .online-nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: #1e293b;
+            padding: 4px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+        .online-nav-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            background: transparent;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .online-nav-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+        }
+        .online-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        .accounting-banner {
+            background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%);
+            border: 1px solid #c7d2fe;
+            border-left: 5px solid #4f46e5;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .kpi-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .kpi-val {
+            font-size: 22px;
+            font-weight: 900;
+            margin-top: 6px;
+            font-variant-numeric: tabular-nums;
+        }
+        .kpi-sub {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .tbl-clean {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+        }
+        .tbl-clean th {
+            background: #f1f5f9;
+            color: #334155;
+            text-align: left;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .tbl-clean td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .tbl-clean tr:hover td {
+            background: #f8fafc;
+        }
+    </style>
+<script src="/_aistudio-iframe.js?v=2c34bde1"></script></head>
+<body>
+    <!-- ÜST BAR -->
+    <header class="online-topbar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">
+                🌐
+            </div>
+            <div>
+                <div style="font-size: 15px; font-weight: 900; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;">
+                    Çağdaş Online Satış & Pazaryeri Muhasebesi
+                    <span style="font-size: 10px; background: #16a34a; color: white; padding: 2px 7px; border-radius: 4px; font-weight: 800;">BAĞIMSIZ PROJE</span>
+                </div>
+                <div style="font-size: 11px; color: #94a3b8;">
+                    Supabase Ortak Stok (<code style="color:#a5b4fc;">cagdas_main</code>) • Bağımsız Online Kâr/Zarar & Komisyon (<code style="color:#86efac;">cagdas_online_data</code>)
+                </div>
+            </div>
+        </div>
+
+        <div class="online-nav-tabs">
+            <button id="tab-btn-accounting" class="online-nav-btn active" onclick="window.switchOnlineMainTab('accounting')">
+                🧮 Online Kâr/Zarar & Komisyon Hesabı
+            </button>
+            <button id="tab-btn-marketplace" class="online-nav-btn" onclick="window.switchOnlineMainTab('marketplace')">
+                🛒 Pazaryeri Sipariş & API Merkezi
+            </button>
+            <button id="tab-btn-cloud" class="online-nav-btn" onclick="window.switchOnlineMainTab('cloud')">
+                ☁️ Supabase & GitHub Paketi
+            </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="online-sync-status" style="font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 6px; background: #1e293b; color: #38bdf8; border: 1px solid #334155;">
+                🔄 Supabase Kontrol Ediliyor...
+            </span>
+            <button onclick="window.syncOnlineAppWithSupabase(true)" style="padding: 7px 12px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                🔄 Stok & Muhasebe Eşitle
+            </button>
+        </div>
+    </header>
+
+    <main class="online-container">
+        <!-- MUHASEBE İZOLASYON BİLGİ BARI -->
+        <div class="accounting-banner">
+            <div>
+                <div style="font-size: 13px; font-weight: 900; color: #1e1b4b;">
+                    🛡️ Mağaza FIFO/Vergi Muhasebesi ile Online Komisyon Muhasebesi %100 Ayrıldı
+                </div>
+                <div style="font-size: 11px; color: #475569; margin-top: 2px;">
+                    Buradaki online satışlar, pazaryeri komisyonları ve kargo kesintileri ana mağazanın kâr/zarar tablosuna <strong>karışmaz</strong>. Sadece satılan ürünlerin stok adedi Supabase üzerinden ortak düşülür.
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="window.openQuickOnlineSaleModal()" style="padding: 8px 14px; background: #4f46e5; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                    ➕ Hızlı Online Satış / Komisyon Kaydı Ekle
+                </button>
+                <button onclick="window.downloadOnlineSalesGithubZip()" style="padding: 8px 14px; background: #0f172a; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                    📦 Yeni GitHub Projesi Olarak İndir (.ZIP)
+                </button>
+            </div>
+        </div>
+
+        <!-- SEKME 1: BAĞIMSIZ ONLİNE KÂR/ZARAR & KOMİSYON MUHASEBESİ -->
+        <section id="online-view-accounting">
+            <!-- FİLTRELER -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 12px; font-weight: 800; color: #334155;">🔍 Filtre:</span>
+                    <select id="onl-filter-platform" onchange="window.renderOnlineAccountingView()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-weight: 700;">
+                        <option value="all">Tüm Pazaryerleri (Trendyol, HB, Getir, YS)</option>
+                        <option value="trendyol">🟠 Trendyol</option>
+                        <option value="hepsiburada">🟣 Hepsiburada</option>
+                        <option value="getir">🟡 GetirÇarşı</option>
+                        <option value="yemeksepeti">🔴 Yemeksepeti Mahalle</option>
+                        <option value="website">🌐 Kendi Web Sitemiz / Sosyal Medya</option>
+                    </select>
+                    <input type="date" id="onl-start-date" onchange="window.renderOnlineAccountingView()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;" />
+                    <input type="date" id="onl-end-date" onchange="window.renderOnlineAccountingView()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;" />
+                    <label style="font-size: 11px; font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <span>KDV (%):</span>
+                        <select id="onl-vat-rate" onchange="window.renderOnlineAccountingView()" style="padding: 5px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-weight: 700;">
+                            <option value="0">%0 (KDV Hariç Hesapla)</option>
+                            <option value="10" selected>%10 (Mama / Gıda KDV)</option>
+                            <option value="20">%20 (Aksesuar / Standart KDV)</option>
+                        </select>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button onclick="window.exportOnlineAccountingCSV()" style="padding: 6px 12px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                        📊 Online Muhasebe Excel (CSV) İndir
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI KARTLARI -->
+            <div class="kpi-grid" id="onl-kpi-container"></div>
+
+            <!-- PAZARYERİ BAZLI KOMİSYON & HAKEDİŞ TABLOSU -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+                <div style="font-size: 13px; font-weight: 900; color: #0f172a; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>📊 Pazaryeri Bazlı Komisyon, Kargo ve Saf Net Kâr Özeti</span>
+                    <span style="font-size: 11px; color: #64748b; font-weight: 600;">Formül: Brüt Satış - Komisyon - Kargo/Hizmet - KDV - Ürün Alış Maliyeti = Saf Online Net Kâr</span>
+                </div>
+                <div style="overflow-x: auto;" id="onl-platform-breakdown"></div>
+            </div>
+
+            <!-- ONLİNE SATIŞLAR VE KOMİSYON DETAY LİSTESİ -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
+                <div style="font-size: 13px; font-weight: 900; color: #0f172a; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <span>📋 Online Siparişler & Kalem Bazlı Kâr/Zarar Dökümü</span>
+                    <input type="text" id="onl-search-input" oninput="window.renderOnlineAccountingView()" placeholder="Sipariş No, Müşteri veya Ürün Ara..." style="padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; min-width: 240px;" />
+                </div>
+                <div style="overflow-x: auto;" id="onl-orders-table-wrap"></div>
+            </div>
+        </section>
+
+        <!-- SEKME 2: PAZARYERİ MERKEZİ (MARKETPLACE.JS EKRANI) -->
+        <section id="online-view-marketplace" style="display: none;">
+            <div id="screen"></div>
+        </section>
+
+        <!-- SEKME 3: SUPABASE & GITHUB PROJE AYARLARI -->
+        <section id="online-view-cloud" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px;">
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #4f46e5;">☁️ Supabase Veritabanı Bağlantısı</h3>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">
+                        Ana mağaza ile aynı Supabase URL ve Anon Key girildiğinde:
+                        <br>• <strong>Ortak Stok:</strong> <code>cagdas_main</code> üzerinden ürünler ve stok adetleri canlı çekilir.
+                        <br>• <strong>Ayrı Kâr/Zarar:</strong> Online satışlar ve komisyonlar <code>cagdas_online_data</code> satırına kaydedilir.
+                    </p>
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Supabase Project URL</label>
+                        <input type="text" id="onl-sb-url" placeholder="https://xxxx.supabase.co" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Supabase Anon Public Key</label>
+                        <input type="password" id="onl-sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5..." style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="window.saveOnlineSupabaseConfig()" style="padding: 9px 16px; background: #4f46e5; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                            💾 Kaydet ve Bağlan
+                        </button>
+                        <button onclick="window.syncOnlineAppWithSupabase(true)" style="padding: 9px 16px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer;">
+                            🔄 Şimdi Senkronize Et
+                        </button>
+                    </div>
+                </div>
+
+                <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #0f172a;">📦 Yeni GitHub Deposu İçin Hazır Paket (.ZIP)</h3>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">
+                        Bu Online Satış uygulamasını kendi başına çalışan ayrı bir GitHub deposuna (veya Vercel / Netlify / Render / kendi sunucunuza) yüklemek için tüm dosyaları tek tıkla indirin.
+                    </p>
+                    <ul style="font-size: 11px; color: #334155; line-height: 1.7; padding-left: 18px; margin-bottom: 14px;">
+                        <li><code>index.html</code> (Bağımsız Online Satış & Komisyon Muhasebesi Arayüzü)</li>
+                        <li><code>js/modules/marketplace.js</code>, <code>js/state.js</code>, <code>js/theme.js</code>, <code>js/github_exporter.js</code></li>
+                        <li><code>server.js</code> & <code>package.json</code> (Node.js / Pazaryeri API Proxy Desteği)</li>
+                        <li><code>netlify.toml</code>, <code>vercel.json</code> & <code>README.md</code> (GitHub Kurulum Rehberi)</li>
+                    </ul>
+                    <button onclick="window.downloadOnlineSalesGithubZip()" style="width: 100%; padding: 11px 16px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 900; cursor: pointer;">
+                        📥 Online Satış GitHub Projesini İndir (.ZIP)
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- HIZLI ONLİNE SATIŞ / KOMİSYON KAYDI MODALI -->
+    <div id="quick-online-sale-modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
+        <div style="background: #fff; width: 100%; max-width: 560px; border-radius: 12px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <div style="font-size: 15px; font-weight: 900; color: #0f172a;">➕ Yeni Online Satış & Komisyon Kaydı</div>
+                <button onclick="document.getElementById('quick-online-sale-modal').style.display='none'" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #64748b;">✕</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Pazaryeri Platformu</label>
+                    <select id="qm-platform" onchange="window.onQuickModalPlatformChange()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 700;">
+                        <option value="trendyol" data-comm="18" data-ship="55">🟠 Trendyol</option>
+                        <option value="hepsiburada" data-comm="17" data-ship="55">🟣 Hepsiburada</option>
+                        <option value="getir" data-comm="22" data-ship="25">🟡 GetirÇarşı</option>
+                        <option value="yemeksepeti" data-comm="20" data-ship="25">🔴 Yemeksepeti Mahalle</option>
+                        <option value="website" data-comm="2.5" data-ship="45">🌐 Kendi Web Sitemiz</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Sipariş No</label>
+                    <input type="text" id="qm-order-no" placeholder="Örn: TY-984512" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Satılan Ürün (Supabase Ortak Mağaza Stoğundan)</label>
+                <select id="qm-product-id" onchange="window.onQuickModalProductChange()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px;"></select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Adet</label>
+                    <input type="number" id="qm-qty" value="1" min="1" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Birim Online Satış (₺)</label>
+                    <input type="number" id="qm-sell-price" step="0.01" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Birim Alış Maliyeti (₺)</label>
+                    <input type="number" id="qm-buy-price" step="0.01" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Komisyon Oranı (%)</label>
+                    <input type="number" id="qm-comm-rate" value="18" step="0.1" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Kargo Kesintisi (₺)</label>
+                    <input type="number" id="qm-shipping-fee" value="55" step="0.5" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; display: block; margin-bottom: 4px;">Platform Hizmet Ücreti (₺)</label>
+                    <input type="number" id="qm-service-fee" value="5" step="0.5" oninput="window.updateQuickModalPreview()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; box-sizing: border-box;" />
+                </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <input type="checkbox" id="qm-deduct-stock" checked />
+                    <span>📦 Ortak Mağaza Stoğundan (Supabase <code>cagdas_main</code>) Otomatik Düş</span>
+                </label>
+            </div>
+
+            <div id="qm-preview-box" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 14px; font-size: 12px;"></div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button onclick="document.getElementById('quick-online-sale-modal').style.display='none'" style="padding: 9px 16px; background: #e2e8f0; color: #334155; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">İptal</button>
+                <button onclick="window.saveQuickOnlineSale()" style="padding: 9px 18px; background: #16a34a; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer;">✅ Kaydet (Online Muhasebeye İşle)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMEL MODÜLLER -->
+    <script src="/js/theme.js?v=4.5.0"></script>
+    <script src="/js/state.js?v=4.5.0"></script>
+    <script src="/js/modules/marketplace.js?v=4.5.0"></script>
+    <script src="/js/github_exporter.js?v=4.5.0"></script>
+
+    <!-- BAĞIMSIZ ONLİNE MUHASEBE & SUPABASE ÇİFT KAYIT (DUAL-ROW) SENKRON MOTORU -->
+    <script>
+        (function() {
+            let sbClient = null;
+            let currentOnlineTab = 'accounting';
+
+            // Online muhasebe verisi (Mağaza state.sales ile ASLA karışmaz)
+            window.onlineAccounting = {
+                onlineSales: [],
+                onlineReturns: [],
+                marketplace: null,
+                updatedAt: null
+            };
+
+            function loadLocalOnlineData() {
+                try {
+                    const raw = localStorage.getItem('cagdas_online_data');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && typeof parsed === 'object') {
+                            window.onlineAccounting.onlineSales = Array.isArray(parsed.onlineSales) ? parsed.onlineSales : [];
+                            window.onlineAccounting.onlineReturns = Array.isArray(parsed.onlineReturns) ? parsed.onlineReturns : [];
+                            if (parsed.marketplace) {
+                                state.marketplace = parsed.marketplace;
+                            }
+                        }
+                    }
+                } catch(e) {}
+
+                // Eğer eski state.sales içinde online satış kalmışsa otomatik olarak online muhasebeye al
+                if (Array.isArray(state.sales)) {
+                    const legacyOnline = state.sales.filter(s => s && (s.isOnlineSale || s.platform || s.channel || (s.invoiceNo && /^(TY-|HB-|GT-|YS-|ONL-)/i.test(String(s.invoiceNo)))));
+                    if (legacyOnline.length > 0) {
+                        const existingIds = new Set(window.onlineAccounting.onlineSales.map(x => x.id || x.invoiceNo));
+                        legacyOnline.forEach(s => {
+                            const k = s.id || s.invoiceNo;
+                            if (!existingIds.has(k)) {
+                                window.onlineAccounting.onlineSales.push(s);
+                                existingIds.add(k);
+                            }
+                        });
+                    }
+                }
+
+                // Bu bağımsız uygulamada state.sales yalnızca onlineSales dizisini temsil eder
+                state.sales = window.onlineAccounting.onlineSales;
+            }
+
+            // Override saveData in Standalone Online App so it NEVER overwrites store sales in cagdas_main!
+            window.saveData = function() {
+                try {
+                    window.onlineAccounting.onlineSales = Array.isArray(state.sales) ? state.sales : [];
+                    window.onlineAccounting.marketplace = state.marketplace || {};
+                    window.onlineAccounting.updatedAt = new Date().toISOString();
+                    localStorage.setItem('cagdas_online_data', JSON.stringify(window.onlineAccounting));
+                } catch(e) {}
+                window.pushOnlineDataToSupabase();
+            };
+
+            window.render = function() {
+                if (currentOnlineTab === 'accounting') {
+                    window.renderOnlineAccountingView();
+                } else if (currentOnlineTab === 'marketplace') {
+                    const scr = document.getElementById('screen');
+                    if (scr && typeof window.renderMarketplace === 'function') {
+                        window.renderMarketplace(scr);
+                    }
+                }
+            };
+
+            window.switchOnlineMainTab = function(tab) {
+                currentOnlineTab = tab;
+                ['accounting', 'marketplace', 'cloud'].forEach(t => {
+                    const btn = document.getElementById('tab-btn-' + t);
+                    const sec = document.getElementById('online-view-' + t);
+                    if (btn) btn.className = 'online-nav-btn' + (t === tab ? ' active' : '');
+                    if (sec) sec.style.display = (t === tab) ? 'block' : 'none';
+                });
+                window.render();
+            };
+
+            function updateStatusBadge(text, color) {
+                const el = document.getElementById('online-sync-status');
+                if (el) {
+                    el.textContent = text;
+                    el.style.color = color || '#38bdf8';
+                }
+            }
+
+            window.initOnlineSupabase = function() {
+                const url = (localStorage.getItem('supabase_url') || '').trim();
+                const key = (localStorage.getItem('supabase_key') || '').trim();
+                const urlInp = document.getElementById('onl-sb-url');
+                const keyInp = document.getElementById('onl-sb-key');
+                if (urlInp) urlInp.value = url;
+                if (keyInp) keyInp.value = key;
+
+                if (url && key && window.supabase) {
+                    try {
+                        sbClient = window.supabase.createClient(url, key, { auth: { persistSession: false } });
+                        window.syncOnlineAppWithSupabase(false);
+                    } catch(e) {
+                        updateStatusBadge('⚠️ Supabase Bağlantı Hatası', '#f87171');
+                    }
+                } else {
+                    updateStatusBadge('ℹ️ Yerel Mod (Supabase Ayarlanmadı)', '#fbbf24');
+                }
+            };
+
+            window.saveOnlineSupabaseConfig = function() {
+                const url = (document.getElementById('onl-sb-url')?.value || '').trim();
+                const key = (document.getElementById('onl-sb-key')?.value || '').trim();
+                if (!url || !key) {
+                    alert('Lütfen Supabase Project URL ve Anon Key giriniz.');
+                    return;
+                }
+                localStorage.setItem('supabase_url', url);
+                localStorage.setItem('supabase_key', key);
+                window.initOnlineSupabase();
+                alert('✅ Supabase bağlantısı kaydedildi! Ortak stok ve bağımsız online muhasebe senkronize ediliyor.');
+            };
+
+            // Supabase'den 1) Ortak Stokları (cagdas_main.products) ve 2) Online Muhasebeyi (cagdas_online_data) çek
+            window.syncOnlineAppWithSupabase = async function(showToast) {
+                if (!sbClient) {
+                    if (showToast) alert('⚠️ Önce Supabase bağlantısını yapılandırın.');
+                    return;
+                }
+                updateStatusBadge('🔄 Supabase Eşitleniyor...', '#38bdf8');
+                try {
+                    // 1. Ortak Ürün ve Stokları Çek (cagdas_main)
+                    const { data: mainRow } = await sbClient
+                        .from('cagdas_app_data')
+                        .select('data, updated_at')
+                        .eq('id', 'cagdas_main')
+                        .maybeSingle();
+
+                    if (mainRow && mainRow.data && Array.isArray(mainRow.data.products)) {
+                        state.products = mainRow.data.products;
+                        state.categories = mainRow.data.categories || state.categories;
+                        state.stockLog = mainRow.data.stockLog || state.stockLog;
+                    }
+
+                    // 2. Bağımsız Online Muhasebeyi Çek (cagdas_online_data)
+                    const { data: onlineRow } = await sbClient
+                        .from('cagdas_app_data')
+                        .select('data, updated_at')
+                        .eq('id', 'cagdas_online_data')
+                        .maybeSingle();
+
+                    if (onlineRow && onlineRow.data) {
+                        const rData = onlineRow.data;
+                        if (Array.isArray(rData.onlineSales)) {
+                            window.onlineAccounting.onlineSales = rData.onlineSales;
+                            state.sales = window.onlineAccounting.onlineSales;
+                        }
+                        if (rData.marketplace) {
+                            state.marketplace = rData.marketplace;
+                            window.onlineAccounting.marketplace = rData.marketplace;
+                        }
+                        localStorage.setItem('cagdas_online_data', JSON.stringify(window.onlineAccounting));
+                    }
+
+                    updateStatusBadge('🟢 Supabase Ortak Stok & Ayrı Muhasebe Aktif', '#4ade80');
+                    window.render();
+                    if (showToast) {
+                        alert(`✅ Senkronizasyon Tamamlandı!\n\n📦 Ortak Mağaza Ürünü: ${(state.products || []).length} adet\n🌐 Online Sipariş Kaydı: ${(window.onlineAccounting.onlineSales || []).length} adet`);
+                    }
+                } catch(err) {
+                    updateStatusBadge('⚠️ Senkron Hatası', '#f87171');
+                }
+            };
+
+            // Sadece Online Muhasebeyi 'cagdas_online_data' satırına, Stok Değişimini ise 'cagdas_main.products' içine yazar
+            window.pushOnlineDataToSupabase = async function( deductProductStockInMain = false ) {
+                if (!sbClient) return;
+                const nowIso = new Date().toISOString();
+                try {
+                    await sbClient.from('cagdas_app_data').upsert({
+                        id: 'cagdas_online_data',
+                        data: window.onlineAccounting,
+                        updated_at: nowIso
+                    }, { onConflict: 'id' });
+
+                    if (deductProductStockInMain) {
+                        const { data: mainRow } = await sbClient
+                            .from('cagdas_app_data')
+                            .select('data')
+                            .eq('id', 'cagdas_main')
+                            .maybeSingle();
+
+                        if (mainRow && mainRow.data) {
+                            const updatedMain = mainRow.data;
+                            updatedMain.products = state.products;
+                            updatedMain.stockLog = state.stockLog;
+                            await sbClient.from('cagdas_app_data').upsert({
+                                id: 'cagdas_main',
+                                data: updatedMain,
+                                updated_at: nowIso
+                            }, { onConflict: 'id' });
+                        }
+                    }
+                    updateStatusBadge('🟢 Supabase Kaydedildi', '#4ade80');
+                } catch(e) {
+                    updateStatusBadge('⚠️ Bulut Kayıt Hatası', '#f87171');
+                }
+            };
+
+            // ========== BAĞIMSIZ ONLİNE KÂR/ZARAR & KOMİSYON HESAPLAMA EKRANI ==========
+            window.renderOnlineAccountingView = function() {
+                const platformFilter = document.getElementById('onl-filter-platform')?.value || 'all';
+                const startDate = document.getElementById('onl-start-date')?.value || '';
+                const endDate = document.getElementById('onl-end-date')?.value || '';
+                const vatRate = (parseFloat(document.getElementById('onl-vat-rate')?.value) || 0) / 100;
+                const searchQ = (document.getElementById('onl-search-input')?.value || '').trim().toLowerCase();
+
+                const allOnlineSales = Array.isArray(window.onlineAccounting.onlineSales) ? window.onlineAccounting.onlineSales : [];
+
+                const filtered = allOnlineSales.filter(s => {
+                    if (!s || s.isCancelled || s.status === 'cancelled') return false;
+                    const plat = (s.platform || s.channel || 'trendyol').toLowerCase();
+                    if (platformFilter !== 'all' && plat !== platformFilter) return false;
+                    if (searchQ) {
+                        const hay = `${s.invoiceNo || ''} ${s.customer || ''} ${(s.items || []).map(i => i.name).join(' ')}`.toLowerCase();
+                        if (!hay.includes(searchQ)) return false;
+                    }
+                    return true;
+                });
+
+                let totalGross = 0;
+                let totalCommission = 0;
+                let totalShipping = 0;
+                let totalServiceFee = 0;
+                let totalBuyCost = 0;
+                let totalVat = 0;
+                let totalNetProfit = 0;
+
+                const platStats = {
+                    trendyol: { name: '🟠 Trendyol', count: 0, gross: 0, comm: 0, ship: 0, cost: 0, vat: 0, net: 0 },
+                    hepsiburada: { name: '🟣 Hepsiburada', count: 0, gross: 0, comm: 0, ship: 0, cost: 0, vat: 0, net: 0 },
+                    getir: { name: '🟡 GetirÇarşı', count: 0, gross: 0, comm: 0, ship: 0, cost: 0, vat: 0, net: 0 },
+                    yemeksepeti: { name: '🔴 Yemeksepeti', count: 0, gross: 0, comm: 0, ship: 0, cost: 0, vat: 0, net: 0 },
+                    website: { name: '🌐 Web / Diğer', count: 0, gross: 0, comm: 0, ship: 0, cost: 0, vat: 0, net: 0 }
+                };
+
+                const enrichedRows = filtered.map(s => {
+                    const platKey = (s.platform || 'trendyol').toLowerCase();
+                    const pStat = platStats[platKey] || platStats.website;
+
+                    const gross = parseFloat(s.total) || 0;
+                    const commAmt = parseFloat(s.commissionAmount) || (gross * ((parseFloat(s.commissionRate) || 18) / 100));
+                    const shipAmt = parseFloat(s.shippingFee) || 0;
+                    const srvAmt = parseFloat(s.serviceFee) || 0;
+
+                    let buyCost = 0;
+                    (s.items || []).forEach(it => {
+                        const q = parseFloat(it.qty) || 1;
+                        let bp = parseFloat(it.buyPrice) || 0;
+                        if (bp <= 0) {
+                            const foundP = (state.products || []).find(p => p.id == it.id || p.name === it.name);
+                            if (foundP) bp = parseFloat(foundP.buyPrice) || 0;
+                        }
+                        buyCost += bp * q;
+                    });
+
+                    const vatAmt = vatRate > 0 ? (gross - (gross / (1 + vatRate))) : 0;
+                    const netPayout = gross - commAmt - shipAmt - srvAmt;
+                    const netProfit = netPayout - buyCost - vatAmt;
+
+                    totalGross += gross;
+                    totalCommission += commAmt;
+                    totalShipping += shipAmt;
+                    totalServiceFee += srvAmt;
+                    totalBuyCost += buyCost;
+                    totalVat += vatAmt;
+                    totalNetProfit += netProfit;
+
+                    pStat.count++;
+                    pStat.gross += gross;
+                    pStat.comm += commAmt;
+                    pStat.ship += (shipAmt + srvAmt);
+                    pStat.cost += buyCost;
+                    pStat.vat += vatAmt;
+                    pStat.net += netProfit;
+
+                    return {
+                        sale: s,
+                        platName: pStat.name,
+                        gross,
+                        commAmt,
+                        shipAndSrv: shipAmt + srvAmt,
+                        buyCost,
+                        vatAmt,
+                        netPayout,
+                        netProfit,
+                        margin: gross > 0 ? (netProfit / gross) * 100 : 0
+                    };
+                });
+
+                const overallMargin = totalGross > 0 ? (totalNetProfit / totalGross) * 100 : 0;
+                const totalPayout = totalGross - totalCommission - totalShipping - totalServiceFee;
+
+                const kpiEl = document.getElementById('onl-kpi-container');
+                if (kpiEl) {
+                    kpiEl.innerHTML = `
+                        <div class="kpi-box" style="border-left: 4px solid #0284c7;">
+                            <div class="kpi-label">💵 Brüt Online Satış</div>
+                            <div class="kpi-val" style="color: #0284c7;">${totalGross.toFixed(2)}₺</div>
+                            <div class="kpi-sub">${enrichedRows.length} Online Sipariş</div>
+                        </div>
+                        <div class="kpi-box" style="border-left: 4px solid #dc2626;">
+                            <div class="kpi-label">🏷️ Pazaryeri Komisyonu</div>
+                            <div class="kpi-val" style="color: #dc2626;">-${totalCommission.toFixed(2)}₺</div>
+                            <div class="kpi-sub">Platform Kesintileri</div>
+                        </div>
+                        <div class="kpi-box" style="border-left: 4px solid #d97706;">
+                            <div class="kpi-label">🚚 Kargo & Hizmet Kesintisi</div>
+                            <div class="kpi-val" style="color: #d97706;">-${(totalShipping + totalServiceFee).toFixed(2)}₺</div>
+                            <div class="kpi-sub">Kargo: ${totalShipping.toFixed(0)}₺ | Hizmet: ${totalServiceFee.toFixed(0)}₺</div>
+                        </div>
+                        <div class="kpi-box" style="border-left: 4px solid #4f46e5;">
+                            <div class="kpi-label">🏦 Net Pazaryeri Hakedişi</div>
+                            <div class="kpi-val" style="color: #4f46e5;">${totalPayout.toFixed(2)}₺</div>
+                            <div class="kpi-sub">Hesaba Yatan Net Tutar</div>
+                        </div>
+                        <div class="kpi-box" style="border-left: 4px solid #ec4899;">
+                            <div class="kpi-label">📦 Ürün Alış + KDV Maliyeti</div>
+                            <div class="kpi-val" style="color: #ec4899;">-${(totalBuyCost + totalVat).toFixed(2)}₺</div>
+                            <div class="kpi-sub">Maliyet: ${totalBuyCost.toFixed(0)}₺ | KDV: ${totalVat.toFixed(0)}₺</div>
+                        </div>
+                        <div class="kpi-box" style="border-left: 4px solid ${totalNetProfit >= 0 ? '#16a34a' : '#dc2626'}; background: ${totalNetProfit >= 0 ? '#f0fdf4' : '#fef2f2'};">
+                            <div class="kpi-label">💎 SAF ONLİNE NET KÂR</div>
+                            <div class="kpi-val" style="color: ${totalNetProfit >= 0 ? '#16a34a' : '#dc2626'};">${totalNetProfit >= 0 ? '+' : ''}${totalNetProfit.toFixed(2)}₺</div>
+                            <div class="kpi-sub" style="font-weight: 800;">Net Kâr Marjı: %${overallMargin.toFixed(1)}</div>
+                        </div>
+                    `;
+                }
+
+                const platWrap = document.getElementById('onl-platform-breakdown');
+                if (platWrap) {
+                    platWrap.innerHTML = `
+                        <table class="tbl-clean">
+                            <thead>
+                                <tr>
+                                    <th>Pazaryeri Platformu</th>
+                                    <th>Sipariş</th>
+                                    <th>Brüt Satış</th>
+                                    <th>(-) Komisyon</th>
+                                    <th>(-) Kargo & Hizmet</th>
+                                    <th>(=) Net Hakediş</th>
+                                    <th>(-) Ürün Maliyeti & KDV</th>
+                                    <th>(=) SAF NET KÂR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.values(platStats).map(p => {
+                                    const hakedis = p.gross - p.comm - p.ship;
+                                    return `
+                                        <tr>
+                                            <td style="font-weight: 800;">${p.name}</td>
+                                            <td>${p.count} Adet</td>
+                                            <td style="font-weight: 700;">${p.gross.toFixed(2)}₺</td>
+                                            <td style="color: #dc2626;">-${p.comm.toFixed(2)}₺</td>
+                                            <td style="color: #d97706;">-${p.ship.toFixed(2)}₺</td>
+                                            <td style="font-weight: 800; color: #4f46e5;">${hakedis.toFixed(2)}₺</td>
+                                            <td style="color: #ec4899;">-${(p.cost + p.vat).toFixed(2)}₺</td>
+                                            <td style="font-weight: 900; color: ${p.net >= 0 ? '#16a34a' : '#dc2626'};">${p.net >= 0 ? '+' : ''}${p.net.toFixed(2)}₺</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                const ordersWrap = document.getElementById('onl-orders-table-wrap');
+                if (ordersWrap) {
+                    if (enrichedRows.length === 0) {
+                        ordersWrap.innerHTML = `
+                            <div style="text-align: center; padding: 28px; color: #64748b;">
+                                Henüz kayıtlı online satış bulunmuyor. Üstteki <strong>"➕ Hızlı Online Satış / Komisyon Kaydı Ekle"</strong> butonundan veya <strong>"🛒 Pazaryeri Sipariş & API Merkezi"</strong> sekmesinden sipariş ekleyebilirsiniz.
+                            </div>
+                        `;
+                    } else {
+                        ordersWrap.innerHTML = `
+                            <table class="tbl-clean">
+                                <thead>
+                                    <tr>
+                                        <th>Sipariş No / Tarih</th>
+                                        <th>Platform</th>
+                                        <th>Satılan Ürünler</th>
+                                        <th>Brüt Tutar</th>
+                                        <th>Komisyon</th>
+                                        <th>Kargo/Hizmet</th>
+                                        <th>Net Hakediş</th>
+                                        <th>Ürün Maliyeti</th>
+                                        <th>Saf Net Kâr</th>
+                                        <th>İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${enrichedRows.slice().reverse().map(r => `
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 800; color: #0f172a;">${r.sale.invoiceNo || '-'}</div>
+                                                <div style="font-size: 10px; color: #64748b;">${r.sale.timestamp || ''}</div>
+                                            </td>
+                                            <td><span style="font-weight: 700;">${r.platName}</span></td>
+                                            <td>
+                                                ${(r.sale.items || []).map(i => `<div>• <strong>${i.name}</strong> x${i.qty || 1}</div>`).join('')}
+                                            </td>
+                                            <td style="font-weight: 700;">${r.gross.toFixed(2)}₺</td>
+                                            <td style="color: #dc2626;">-${r.commAmt.toFixed(2)}₺</td>
+                                            <td style="color: #d97706;">-${r.shipAndSrv.toFixed(2)}₺</td>
+                                            <td style="font-weight: 800; color: #4f46e5;">${r.netPayout.toFixed(2)}₺</td>
+                                            <td style="color: #ec4899;">-${r.buyCost.toFixed(2)}₺</td>
+                                            <td style="font-weight: 900; color: ${r.netProfit >= 0 ? '#16a34a' : '#dc2626'};">
+                                                ${r.netProfit >= 0 ? '+' : ''}${r.netProfit.toFixed(2)}₺
+                                                <div style="font-size: 9px; font-weight: 600;">(%${r.margin.toFixed(1)})</div>
+                                            </td>
+                                            <td>
+                                                <button onclick="window.deleteOnlineSaleRecord('${r.sale.id}')" style="padding: 4px 8px; background: #fee2e2; color: #dc2626; border: none; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer;">🗑️</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                }
+            };
+
+            // Hızlı Online Satış & Komisyon Ekleme Modalı Fonksiyonları
+            window.openQuickOnlineSaleModal = function() {
+                const modal = document.getElementById('quick-online-sale-modal');
+                const sel = document.getElementById('qm-product-id');
+                if (sel) {
+                    const prods = state.products || [];
+                    sel.innerHTML = prods.map(p => `<option value="${p.id}">${p.name} (Stok: ${(p.shop || 0) + (p.warehouse || 0)} | Alış: ${p.buyPrice || 0}₺ | Satış: ${p.sellPrice || 0}₺)</option>`).join('');
+                }
+                document.getElementById('qm-order-no').value = 'TY-' + Math.floor(100000 + Math.random() * 900000);
+                window.onQuickModalProductChange();
+                if (modal) modal.style.display = 'flex';
+            };
+
+            window.onQuickModalPlatformChange = function() {
+                const sel = document.getElementById('qm-platform');
+                const opt = sel.options[sel.selectedIndex];
+                if (opt) {
+                    document.getElementById('qm-comm-rate').value = opt.getAttribute('data-comm') || 18;
+                    document.getElementById('qm-shipping-fee').value = opt.getAttribute('data-ship') || 55;
+                    const prefixMap = { trendyol: 'TY-', hepsiburada: 'HB-', getir: 'GT-', yemeksepeti: 'YS-', website: 'WEB-' };
+                    const pfx = prefixMap[sel.value] || 'ONL-';
+                    document.getElementById('qm-order-no').value = pfx + Math.floor(100000 + Math.random() * 900000);
+                }
+                window.updateQuickModalPreview();
+            };
+
+            window.onQuickModalProductChange = function() {
+                const pid = document.getElementById('qm-product-id')?.value;
+                const prod = (state.products || []).find(p => String(p.id) === String(pid));
+                if (prod) {
+                    document.getElementById('qm-sell-price').value = prod.sellPrice || 0;
+                    document.getElementById('qm-buy-price').value = prod.buyPrice || 0;
+                }
+                window.updateQuickModalPreview();
+            };
+
+            window.updateQuickModalPreview = function() {
+                const qty = parseFloat(document.getElementById('qm-qty')?.value) || 1;
+                const sell = parseFloat(document.getElementById('qm-sell-price')?.value) || 0;
+                const buy = parseFloat(document.getElementById('qm-buy-price')?.value) || 0;
+                const commRate = parseFloat(document.getElementById('qm-comm-rate')?.value) || 0;
+                const ship = parseFloat(document.getElementById('qm-shipping-fee')?.value) || 0;
+                const srv = parseFloat(document.getElementById('qm-service-fee')?.value) || 0;
+
+                const gross = sell * qty;
+                const commAmt = gross * (commRate / 100);
+                const netPayout = gross - commAmt - ship - srv;
+                const totalBuy = buy * qty;
+                const netProfit = netPayout - totalBuy;
+
+                const box = document.getElementById('qm-preview-box');
+                if (box) {
+                    box.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>Brüt Satış Tutarı:</span><strong>${gross.toFixed(2)}₺</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #dc2626;">
+                            <span>(-) Pazaryeri Komisyonu (%${commRate}):</span><strong>-${commAmt.toFixed(2)}₺</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #d97706;">
+                            <span>(-) Kargo + Hizmet Kesintisi:</span><strong>-${(ship + srv).toFixed(2)}₺</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #4f46e5;">
+                            <span>(=) Pazaryeri Net Hakedişi:</span><strong>${netPayout.toFixed(2)}₺</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #ec4899;">
+                            <span>(-) Ürün Alış Maliyeti:</span><strong>-${totalBuy.toFixed(2)}₺</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 6px; border-top: 1px solid #cbd5e1; font-size: 14px; color: ${netProfit >= 0 ? '#16a34a' : '#dc2626'};">
+                            <strong>💎 SAF ONLİNE NET KÂR:</strong><strong>${netProfit >= 0 ? '+' : ''}${netProfit.toFixed(2)}₺</strong>
+                        </div>
+                    `;
+                }
+            };
+
+            window.saveQuickOnlineSale = function() {
+                const platform = document.getElementById('qm-platform')?.value || 'trendyol';
+                const orderNo = (document.getElementById('qm-order-no')?.value || '').trim() || ('ONL-' + Date.now());
+                const pid = document.getElementById('qm-product-id')?.value;
+                const prod = (state.products || []).find(p => String(p.id) === String(pid));
+                const qty = parseFloat(document.getElementById('qm-qty')?.value) || 1;
+                const sell = parseFloat(document.getElementById('qm-sell-price')?.value) || 0;
+                const buy = parseFloat(document.getElementById('qm-buy-price')?.value) || 0;
+                const commRate = parseFloat(document.getElementById('qm-comm-rate')?.value) || 0;
+                const ship = parseFloat(document.getElementById('qm-shipping-fee')?.value) || 0;
+                const srv = parseFloat(document.getElementById('qm-service-fee')?.value) || 0;
+                const deductStock = document.getElementById('qm-deduct-stock')?.checked ?? true;
+
+                const gross = sell * qty;
+                const commAmt = gross * (commRate / 100);
+
+                // Ortak Stoktan Düş
+                if (deductStock && prod) {
+                    if ((prod.shop || 0) >= qty) {
+                        prod.shop -= qty;
+                    } else {
+                        const rem = qty - (prod.shop || 0);
+                        prod.shop = 0;
+                        prod.warehouse = Math.max(0, (prod.warehouse || 0) - rem);
+                    }
+                    if (!Array.isArray(state.stockLog)) state.stockLog = [];
+                    state.stockLog.push({
+                        id: Date.now(),
+                        timestamp: new Date().toLocaleString('tr-TR'),
+                        product: prod.name,
+                        action: `Online Satış (${platform.toUpperCase()} #${orderNo})`,
+                        qty: -qty,
+                        user: 'Online Satış App'
+                    });
+                }
+
+                const newOnlineSale = {
+                    id: Date.now(),
+                    invoiceNo: orderNo,
+                    timestamp: new Date().toLocaleString('tr-TR'),
+                    customer: `${platform.toUpperCase()} Müşterisi`,
+                    platform: platform,
+                    channel: 'marketplace',
+                    isOnlineSale: true,
+                    paymentMethod: 'card',
+                    total: gross,
+                    commissionRate: commRate,
+                    commissionAmount: commAmt,
+                    shippingFee: ship,
+                    serviceFee: srv,
+                    items: [{
+                        id: prod ? prod.id : Date.now(),
+                        name: prod ? prod.name : 'Online Ürün',
+                        qty: qty,
+                        sellPrice: sell,
+                        buyPrice: buy
+                    }]
+                };
+
+                window.onlineAccounting.onlineSales.push(newOnlineSale);
+                state.sales = window.onlineAccounting.onlineSales;
+                localStorage.setItem('cagdas_online_data', JSON.stringify(window.onlineAccounting));
+                window.pushOnlineDataToSupabase(deductStock);
+
+                document.getElementById('quick-online-sale-modal').style.display = 'none';
+                window.renderOnlineAccountingView();
+            };
+
+            window.deleteOnlineSaleRecord = function(id) {
+                if (!confirm('Bu online satış kaydını online muhasebeden silmek istediğinize emin misiniz?')) return;
+                window.onlineAccounting.onlineSales = (window.onlineAccounting.onlineSales || []).filter(s => String(s.id) !== String(id));
+                state.sales = window.onlineAccounting.onlineSales;
+                localStorage.setItem('cagdas_online_data', JSON.stringify(window.onlineAccounting));
+                window.pushOnlineDataToSupabase(false);
+                window.renderOnlineAccountingView();
+            };
+
+            window.exportOnlineAccountingCSV = function() {
+                const rows = window.onlineAccounting.onlineSales || [];
+                let csv = '\uFEFFSiparis_No;Tarih;Platform;Urunler;Brut_Satis;Komisyon;Kargo_Hizmet;Net_Hakedis;Alis_Maliyeti;Saf_Net_Kar\n';
+                rows.forEach(s => {
+                    const gross = parseFloat(s.total) || 0;
+                    const comm = parseFloat(s.commissionAmount) || 0;
+                    const ship = (parseFloat(s.shippingFee) || 0) + (parseFloat(s.serviceFee) || 0);
+                    const payout = gross - comm - ship;
+                    const cost = (s.items || []).reduce((sum, i) => sum + ((parseFloat(i.buyPrice) || 0) * (parseFloat(i.qty) || 1)), 0);
+                    const net = payout - cost;
+                    const itemsStr = (s.items || []).map(i => `${i.name} x${i.qty}`).join(' | ');
+                    csv += `${s.invoiceNo};${s.timestamp};${s.platform || 'online'};"${itemsStr}";${gross.toFixed(2)};${comm.toFixed(2)};${ship.toFixed(2)};${payout.toFixed(2)};${cost.toFixed(2)};${net.toFixed(2)}\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `Cagdas_Online_Kar_Zarar_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+            };
+
+            // Başlat
+            loadLocalOnlineData();
+            window.initOnlineSupabase();
+            window.renderOnlineAccountingView();
+        })();
+    </script>
+</body>
+</html>
